@@ -1,0 +1,57 @@
+# ── Secrets and credentials ──
+**/.env
+**/.env.*
+!**/.env.example
+**/secrets/
+**/credentials*
+**/*token*
+**/*password*
+
+# ── Caches and temporary files ──
+**/cache/
+**/Cache/
+**/caches/
+**/tmp/
+**/temp/
+**/*.tmp
+**/*.bak
+**/*.swp
+**/*.swo
+**/*~
+
+# ── Logs ──
+**/logs/
+**/*.log
+
+# ── Runtime and session data ──
+**/session/
+**/sessions/
+**/socket
+**/*.pid
+**/Singleton*
+
+# ── Application-generated data ──
+discord/
+mozilla/
+dconf/
+pulse/
+nautilus/
+xsettingsd/
+current-theme
+
+# ── User-specific settings ──
+user-dirs.dirs
+user-dirs.locale
+
+# ── GTK generated files ──
+gtk-3.0/bookmarks
+gtk-3.0/gtk.css
+gtk-4.0/gtk.css
+
+# ── Neovim generated files ──
+nvim/plugin/packer_compiled.lua
+nvim/lazy-lock.json.tmp
+
+# ── Git ──
+.git/
+

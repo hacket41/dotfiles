@@ -1,0 +1,4 @@
+theme = ""
+[ytmusic]
+enabled      = true
+cookies_from = "firefox"

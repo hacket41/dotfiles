@@ -1,0 +1,168 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 34,
+  "margin-top": 10,
+  "margin-left": 12,
+  "margin-right": 12,
+  "spacing": 10,
+
+  "modules-left": ["group/stats", "clock", "hyprland/workspaces"],
+  "modules-center": ["group/center"],
+  "modules-right": ["group/system", "battery", "tray", "group/session"],
+
+  "group/stats": {
+    "orientation": "horizontal",
+    "modules": ["cpu", "memory", "custom/gpu-temp", "custom/cpu-temp"],
+  },
+
+  "cpu": {
+    "format": "\uf2db  {usage}%",
+    "interval": 2,
+    "tooltip": true,
+    "tooltip-format": "CPU usage: {usage}%\nAvg clock: {avg_frequency} GHz\nMax clock: {max_frequency} GHz",
+  },
+
+  "memory": {
+    "format": "\udb80\udf5b  {percentage}%",
+    "interval": 5,
+    "tooltip": true,
+    "tooltip-format": "RAM: {used:0.1f} / {total:0.1f} GiB\nAvailable: {avail:0.1f} GiB\nSwap: {swapUsed:0.1f} / {swapTotal:0.1f} GiB",
+  },
+
+  "custom/gpu": {
+    "exec": "$HOME/.config/waybar/scripts/gpu.sh",
+    "return-type": "json",
+    "format": "\uf108  {}%",
+    "interval": 2,
+  },
+
+  "custom/gpu-temp": {
+    "exec": "$HOME/.config/waybar/scripts/gpu-temp.sh",
+    "return-type": "json",
+    "format": "\uf2c9  {}°C",
+    "interval": 3,
+  },
+
+  "custom/cpu-temp": {
+    "exec": "$HOME/.config/waybar/scripts/cpu-temp.sh",
+    "return-type": "json",
+    "format": "\uf2c7  {}°C",
+    "interval": 3,
+  },
+
+  "clock": {
+    "format": "\uf017  {:%H:%M}",
+    "tooltip-format": "{:%A, %d %B %Y}\n\n{calendar}",
+    "calendar": {
+      "mode": "month",
+      "format": {
+        "today": "<span color='#f9e2af'><b>{}</b></span>",
+      },
+    },
+  },
+
+  "hyprland/workspaces": {
+    "format": "{id}",
+    "on-click": "activate",
+    "persistent-workspaces": { "*": 5 },
+  },
+
+  "group/center": {
+    "orientation": "horizontal",
+    "modules": ["custom/arch", "hyprland/window"],
+  },
+
+  "custom/arch": {
+    "format": "\uf303",
+    "tooltip-format": "Applications",
+    "on-click": "wofi --show drun",
+  },
+
+  "hyprland/window": {
+    "format": "{class}",
+    "max-length": 30,
+    "separate-outputs": true,
+    "rewrite": {
+      "google-chrome": "Chrome",
+      "Google-chrome": "Chrome",
+      "chromium": "Chromium",
+      "firefox": "Firefox",
+      "discord": "Discord",
+      "steam": "Steam",
+      "kitty": "Kitty",
+      "Alacritty": "Alacritty",
+      "code": "VS Code",
+      "": "Desktop",
+    },
+  },
+
+  "group/system": {
+    "orientation": "horizontal",
+    "modules": ["network", "bluetooth", "pulseaudio"],
+  },
+
+  "network": {
+    "interval": 5,
+    "format-wifi": "\uf1eb  {essid}",
+    "format-ethernet": "\uf0e8  Wired",
+    "format-disconnected": "\uf071  Offline",
+    "tooltip-format-wifi": "{essid} ({signalStrength}%)\nIP: {ipaddr}\nDown: {bandwidthDownBytes}\nUp: {bandwidthUpBytes}",
+    "tooltip-format-ethernet": "{ifname}\nIP: {ipaddr}",
+    "tooltip-format-disconnected": "Not connected",
+    "on-click": "nm-connection-editor",
+  },
+
+  "bluetooth": {
+    "format": "\uf293  BT",
+    "format-disabled": "\uf293  Off",
+    "format-connected": "\uf293  {num_connections}",
+    "tooltip-format": "{controller_alias}\n{controller_address}",
+    "tooltip-format-connected": "{controller_alias}\n{num_connections} connected\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}  {device_address}",
+    "on-click": "blueman-manager",
+    "on-click-right": "bluetoothctl power toggle",
+  },
+
+  "pulseaudio": {
+    "format": "{icon}  {volume}%",
+    "format-muted": "\uf6a9  Muted",
+    "format-icons": { "default": ["\uf026", "\uf027", "\uf028"] },
+    "tooltip-format": "{desc}\nVolume: {volume}%",
+    "on-click": "pavucontrol",
+    "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
+    "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%",
+  },
+
+  "battery": {
+    "interval": 10,
+    "states": { "warning": 30, "critical": 15 },
+    "format": "{icon}  {capacity}%",
+    "format-charging": "\uf0e7  {capacity}%",
+    "format-plugged": "\uf1e6  {capacity}%",
+    "format-full": "\uf240  {capacity}%",
+    "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"],
+    "tooltip-format": "{timeTo}\nPower draw: {power} W",
+  },
+
+  "tray": { "spacing": 10, "icon-size": 16 },
+
+  "group/session": {
+    "orientation": "horizontal",
+    "modules": ["custom/logout", "custom/power"],
+  },
+
+  "custom/logout": {
+    "format": "\uf08b",
+    "on-click": "hyprctl dispatch exit",
+    "tooltip-format": "Logout",
+  },
+
+  "custom/power": {
+    "format": "\uf011",
+    "on-click": "systemctl poweroff",
+    "on-click-right": "systemctl reboot",
+    "tooltip-format": "Left click: Shutdown\nRight click: Reboot",
+  },
+}

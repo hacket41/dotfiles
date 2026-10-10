@@ -1,0 +1,197 @@
+@import url("file:///home/hacket41/.cache/wal/colors-waybar.css");
+* {
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  text-shadow: none;
+  font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", sans-serif;
+  font-size: 12px;
+}
+
+window#waybar {
+  background: transparent;
+  color: @foreground;
+}
+
+tooltip {
+  background: @background;
+  border: 1px solid @color8;
+  border-radius: 10px;
+}
+
+tooltip label {
+  color: @foreground;
+  padding: 4px 8px;
+}
+
+/* ---------- Pills ---------- */
+#stats,
+#clock,
+#workspaces,
+#center,
+#system,
+#battery,
+#tray,
+#session {
+  background: alpha(@background, 0.75);
+  border-radius: 17px;
+  padding: 6px 14px;
+}
+
+/* ---------- Modules inside pills ---------- */
+#cpu,
+#memory,
+#custom-gpu,
+#custom-gpu-temp,
+#custom-cpu-temp,
+#custom-arch,
+#window,
+#network,
+#bluetooth,
+#pulseaudio,
+#custom-logout,
+#custom-power {
+  background: transparent;
+  padding: 0 8px;
+}
+
+/* ---------- Stats colors ---------- */
+#cpu {
+  color: @color4;
+}
+#memory {
+  color: @color5;
+}
+#custom-gpu {
+  color: @color2;
+}
+#custom-gpu-temp {
+  color: @color7;
+}
+#custom-cpu-temp {
+  color: @color3;
+}
+
+/* ---------- Clock ---------- */
+#clock {
+  color: @color3;
+}
+
+/* ---------- Workspaces: only the number color changes ---------- */
+#workspaces {
+  padding: 6px 8px;
+}
+
+#workspaces button {
+  background: none;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  text-shadow: none;
+  color: @color8;
+  padding: 0 7px;
+  margin: 0;
+  border-radius: 8px;
+  transition: color 150ms ease;
+}
+
+#workspaces button:hover {
+  background: none;
+  background-image: none;
+  box-shadow: none;
+  color: @foreground;
+}
+
+#workspaces button.active {
+  background: none;
+  color: @color4;
+  font-weight: bold;
+}
+
+#workspaces button.urgent {
+  color: @color1;
+}
+
+/* ---------- Center ---------- */
+#custom-arch {
+  color: @color4;
+  font-size: 16px;
+  padding: 0 10px 0 4px;
+}
+
+#window {
+  color: @foreground;
+  font-weight: bold;
+}
+
+window#waybar.empty #window {
+  padding: 0;
+  min-width: 0;
+}
+
+/* ---------- Right ---------- */
+#network {
+  color: @color6;
+}
+#bluetooth {
+  color: @color14;
+}
+#pulseaudio {
+  color: @color13;
+}
+#pulseaudio.muted {
+  color: @color8;
+}
+
+/* ---------- Battery ---------- */
+#battery {
+  color: @color2;
+}
+
+#battery.charging,
+#battery.plugged {
+  color: @color6;
+}
+
+#battery.warning:not(.charging) {
+  color: @color3;
+}
+
+#battery.critical:not(.charging) {
+  color: @color1;
+  font-weight: bold;
+}
+
+/* ---------- Tray ---------- */
+#tray {
+  padding: 6px 12px;
+}
+
+#tray.empty {
+  background: transparent;
+  padding: 0;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+}
+
+/* ---------- Session buttons ---------- */
+#custom-logout {
+  color: @color3;
+}
+#custom-power {
+  color: @color1;
+}
+
+#custom-logout:hover,
+#custom-power:hover {
+  color: @foreground;
+}
