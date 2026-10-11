@@ -1,4 +1,5 @@
 @import url("file:///home/hacket41/.cache/wal/colors-waybar.css");
+
 * {
   border: none;
   border-radius: 0;
@@ -32,6 +33,7 @@ tooltip label {
 #clock,
 #workspaces,
 #center,
+#music,
 #system,
 #battery,
 #tray,
@@ -48,7 +50,6 @@ tooltip label {
 #custom-gpu-temp,
 #custom-cpu-temp,
 #custom-arch,
-#window,
 #network,
 #bluetooth,
 #pulseaudio,
@@ -115,23 +116,31 @@ tooltip label {
   color: @color1;
 }
 
-/* ---------- Center ---------- */
+/* ---------- Center: arch icon pill ---------- */
 #custom-arch {
   color: @color4;
   font-size: 16px;
   padding: 0 10px 0 4px;
 }
 
-#window {
+/* ---------- Music: cava | window name | cava ---------- */
+
+#custom-cava {
+  color: alpha(@foreground, 0.28);
+  font-size: 16px;
+  background: transparent;
+  padding: 0 6px;
+  margin: 0;
+  border-bottom: 2px solid @foreground;
+}
+
+#music #window {
   color: @foreground;
   font-weight: bold;
+  background: transparent;
+  padding: 0 14px;
+  border-bottom: 2px solid @foreground;
 }
-
-window#waybar.empty #window {
-  padding: 0;
-  min-width: 0;
-}
-
 /* ---------- Right ---------- */
 #network {
   color: @color6;

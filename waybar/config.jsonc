@@ -8,7 +8,7 @@
   "spacing": 10,
 
   "modules-left": ["group/stats", "clock", "hyprland/workspaces"],
-  "modules-center": ["group/center"],
+  "modules-center": ["group/music"],
   "modules-right": ["group/system", "battery", "tray", "group/session"],
 
   "group/stats": {
@@ -68,15 +68,27 @@
     "persistent-workspaces": { "*": 5 },
   },
 
-  "group/center": {
-    "orientation": "horizontal",
-    "modules": ["custom/arch", "hyprland/window"],
-  },
-
   "custom/arch": {
     "format": "\uf303",
     "tooltip-format": "Applications",
     "on-click": "wofi --show drun",
+  },
+
+  "custom/cava#left": {
+    "exec": "/home/hacket41/.config/waybar/scripts/cava.sh left",
+    "format": "{}",
+    "tooltip": false,
+  },
+
+  "custom/cava#right": {
+    "exec": "/home/hacket41/.config/waybar/scripts/cava.sh right",
+    "format": "{}",
+    "tooltip": false,
+  },
+
+  "group/music": {
+    "orientation": "horizontal",
+    "modules": ["custom/cava#left", "hyprland/window", "custom/cava#right"],
   },
 
   "hyprland/window": {
@@ -110,7 +122,7 @@
     "tooltip-format-wifi": "{essid} ({signalStrength}%)\nIP: {ipaddr}\nDown: {bandwidthDownBytes}\nUp: {bandwidthUpBytes}",
     "tooltip-format-ethernet": "{ifname}\nIP: {ipaddr}",
     "tooltip-format-disconnected": "Not connected",
-    "on-click": "nm-connection-editor",
+    "on-click": "/home/hacket41/.config/swaync/scripts/wifi_menu.sh",
   },
 
   "bluetooth": {
@@ -120,13 +132,13 @@
     "tooltip-format": "{controller_alias}\n{controller_address}",
     "tooltip-format-connected": "{controller_alias}\n{num_connections} connected\n\n{device_enumerate}",
     "tooltip-format-enumerate-connected": "{device_alias}  {device_address}",
-    "on-click": "blueman-manager",
+    "on-click": "/home/hacket41/.config/swaync/scripts/bluetooth_menu.sh",
     "on-click-right": "bluetoothctl power toggle",
   },
 
   "pulseaudio": {
     "format": "{icon}  {volume}%",
-    "format-muted": "\uf6a9  Muted",
+    "format-muted": "\uf026  Muted",
     "format-icons": { "default": ["\uf026", "\uf027", "\uf028"] },
     "tooltip-format": "{desc}\nVolume: {volume}%",
     "on-click": "pavucontrol",
