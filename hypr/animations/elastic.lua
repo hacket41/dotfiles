@@ -1,0 +1,12 @@
+-- Elastic: windows pull back, then spring forward
+hl.config({ animations = { enabled = true } })
+hl.curve("as_back", { type = "bezier", points = { {0.68, -0.55}, {0.27, 1.55} } })
+hl.curve("as_ease", { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
+hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
+hl.animation({ leaf = "windows", enabled = true, speed = 6, bezier = "as_back" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 6, bezier = "as_back", style = "popin 60%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 4, bezier = "as_back", style = "popin 60%" })
+hl.animation({ leaf = "fade", enabled = true, speed = 4, bezier = "as_ease" })
+hl.animation({ leaf = "border", enabled = true, speed = 5, bezier = "as_ease" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 6, bezier = "as_back", style = "slide" })
+hl.animation({ leaf = "layers", enabled = true, speed = 5, bezier = "as_back", style = "popin 70%" })

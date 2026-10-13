@@ -1,0 +1,12 @@
+-- Pop: quick pop-in with a tiny overshoot
+hl.config({ animations = { enabled = true } })
+hl.curve("as_overshoot", { type = "bezier", points = { {0.34, 1.56}, {0.64, 1} } })
+hl.curve("as_quick", { type = "bezier", points = { {0.15, 0}, {0.1, 1} } })
+hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
+hl.animation({ leaf = "windows", enabled = true, speed = 3, bezier = "as_overshoot" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 3, bezier = "as_overshoot", style = "popin 75%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 2, bezier = "as_quick", style = "popin 85%" })
+hl.animation({ leaf = "fade", enabled = true, speed = 2, bezier = "as_quick" })
+hl.animation({ leaf = "border", enabled = true, speed = 3, bezier = "as_quick" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "as_quick", style = "slide" })
+hl.animation({ leaf = "layers", enabled = true, speed = 3, bezier = "as_overshoot", style = "popin 80%" })

@@ -1,0 +1,12 @@
+-- Bouncy: windows overshoot slightly and settle
+hl.config({ animations = { enabled = true } })
+hl.curve("as_overshoot", { type = "bezier", points = { {0.34, 1.56}, {0.64, 1} } })
+hl.curve("as_ease", { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
+hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
+hl.animation({ leaf = "windows", enabled = true, speed = 5, bezier = "as_overshoot" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 5, bezier = "as_overshoot", style = "popin 70%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 3, bezier = "as_ease", style = "popin 80%" })
+hl.animation({ leaf = "fade", enabled = true, speed = 4, bezier = "as_ease" })
+hl.animation({ leaf = "border", enabled = true, speed = 5, bezier = "as_ease" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "as_overshoot", style = "slide" })
+hl.animation({ leaf = "layers", enabled = true, speed = 4, bezier = "as_overshoot", style = "popin 80%" })

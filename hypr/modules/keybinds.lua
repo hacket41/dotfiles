@@ -55,6 +55,9 @@ hl.bind(
 		"sh -c 'pkill -x rofi || rofi -show window -theme /home/hacket41/.config/rofi/launchers/type-1/style-5.rasi'"
 	)
 )
+hl.bind("CTRL + SHIFT + ESCAPE", hl.dsp.exec_cmd("kitty --class btop -e btop"))
+hl.bind(mainMod .. " + BACKSPACE", hl.dsp.exec_cmd("/home/hacket41/.local/bin/wlogout-menu"))
+-- hl.bind(mainMod .. " + BACKSPACE", hl.dsp.exec_cmd("sh -c 'pkill wlogout || wlogout -p layer-shell'"))
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
 for i = 1, 10 do
@@ -104,3 +107,4 @@ hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
+hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("/home/hacket41/.local/bin/animation-menu"))

@@ -1,50 +1,89 @@
 @import url("file:///home/hacket41/.cache/wal/colors-waybar.css");
 @import "colors.css";
 
-/* ── Base ─────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   Base
+   ══════════════════════════════════════════════════════ */
 * {
   font-family: "JetBrainsMono Nerd Font Propo", "FiraCode Nerd Font", monospace;
   font-size: 12px;
-  transition: all 0.15s ease-in-out;
   border-radius: 0;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
 }
 
-/* ── Control Center Shell ─────────────────────────── */
+/* every button: strip GTK's default gradient / shadow / outline so
+   borders look crisp and consistent everywhere */
+button {
+  background-image: none;
+  box-shadow: none;
+  text-shadow: none;
+  outline: none;
+}
+
+/* ══════════════════════════════════════════════════════
+   Control center shell
+   ══════════════════════════════════════════════════════ */
 .control-center {
   background: @bg;
-  border-radius: 15px;
-  padding: 6px;
-  box-shadow: 0 0 15px @accent-shadow;
+  border: 1px solid @noti-border;
+  border-radius: 16px;
+  padding: 8px;
+  box-shadow: 0 0 18px @accent-shadow;
 }
 
+.control-center .widget-title,
+.control-center .widget-dnd,
+.control-center .widget-menubar,
+.control-center .widget-buttons-grid,
+.control-center .widget-volume,
+.control-center .widget-backlight,
+.control-center .widget-mpris {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+/* ══════════════════════════════════════════════════════
+   Notifications
+   ══════════════════════════════════════════════════════ */
 .notification {
   background: @noti-bg;
-  border-radius: 15px;
-  padding: 4.7px;
-  margin: 2px;
-  box-shadow: 0.5px 0.5px 5px 0.5px rgba(0, 0, 0, 0.5);
+  border: 1px solid @noti-border;
+  border-radius: 14px;
+  padding: 6px;
+  margin: 4px 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* ── Notification Row ──────── */
+.notification.low {
+  background: @noti-bg-low;
+}
+
+.notification.critical {
+  background: @noti-bg-critical;
+  border-color: @noti-close-button-hover;
+}
+
 .notification-row {
   outline: none;
   margin: 0;
   padding: 0;
 }
 
-/* ── Notification Heading ─────── */
 .summary {
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: bold;
   color: @noti-heading;
   background: transparent;
   text-shadow: none;
-  margin-left: 4.5px;
+  margin-left: 4px;
 }
 
-/* -- Notification Description -- */
 .body {
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 500;
   color: @text-primary;
   background: transparent;
@@ -58,16 +97,16 @@
   color: @text-muted;
   background: transparent;
   text-shadow: none;
-  margin-right: 15px;
-  opacity: 0.8px;
+  margin-right: 12px;
+  opacity: 0.8;
 }
 
-/* ── Close Button ─────────────────────────────────── */
+/* ── Close button ─────────────────────────────────── */
 .close-button {
   background: transparent;
   color: @text-muted;
   border: 1px solid transparent;
-  border-radius: 5px;
+  border-radius: 6px;
   padding: 0;
   margin: 4px 6px 0 0;
   opacity: 0;
@@ -76,7 +115,7 @@
 }
 
 .notification:hover .close-button {
-  opacity: 0.75;
+  opacity: 0.8;
   color: @noti-hover;
 }
 
@@ -85,17 +124,17 @@
   color: @bg;
 }
 
-/* ── Actions ──────────────────────────────────────── */
+/* ── Notification actions ─────────────────────────── */
 .notification-default-action,
 .notification-action {
-  border-radius: 4.8px;
+  border-radius: 6px;
   color: @text-primary;
   background: @noti-bg-alt;
-  margin: 1px;
+  margin: 2px;
 }
 
 .notification-action {
-  border: 0.3px solid @noti-border;
+  border: 1px solid @noti-border;
 }
 
 .notification-default-action:hover,
@@ -104,25 +143,36 @@
   color: @noti-fg-action-hover;
 }
 
-/* ── Inline Reply ─────────────────────────────────── */
+.notification-action > button {
+  color: @text-primary;
+  background: transparent;
+}
+
+.notification-action > button:hover {
+  background: @blue-gray;
+}
+
+/* ── Inline reply ─────────────────────────────────── */
 .inline-reply-entry {
   background: @noti-bg-alt;
   color: @text-primary;
   caret-color: @accent;
   border: 1px solid @noti-border;
-  border-radius: 6px;
+  border-radius: 8px;
+  padding: 4px 8px;
 }
 
 .inline-reply-button {
-  margin: 4px 0 0 4px;
+  margin: 4px 0 0 6px;
   background: @noti-bg-alt;
   border: 1px solid @noti-border;
   color: @text-primary;
-  border-radius: 6px;
+  border-radius: 8px;
+  padding: 4px 10px;
 }
 
 .inline-reply-button:hover {
-  background: white;
+  background: @accent;
   color: @bg;
   border-color: @accent;
 }
@@ -133,57 +183,63 @@
   border-color: transparent;
 }
 
-/* ── Widget: Title ────────────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   Widget: title
+   ══════════════════════════════════════════════════════ */
 .widget-title {
   color: @cyan-accent;
   background: @noti-bg-alt;
-  border: 1px solid @accent;
-  border-radius: 8px;
-  padding: 6px 10px;
-  margin: 8px 8px 8px;
-  font-size: 1.2rem;
+  border: 1px solid @noti-border;
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-top: 4px;
+  margin-bottom: 6px;
+  font-size: 1.15rem;
   font-weight: 700;
 }
 
 .widget-title > button {
   font-size: 0.85rem;
   color: @text-muted;
-  margin: 4px 1px 4px;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 5px;
-  box-shadow: none;
+  border-radius: 8px;
+  padding: 3px 10px;
+  margin: 0;
 }
 
 .widget-title > button:hover {
   background: @noti-hover;
-  color: @blue-gray;
+  color: @bg;
   border-color: @noti-hover-button;
 }
 
-/* ── Widget: DND ──────────────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   Widget: Do Not Disturb
+   ══════════════════════════════════════════════════════ */
 .widget-dnd {
   background: @noti-bg-alt;
-  border: 1px solid @accent;
-  border-radius: 8px;
-  padding: 6px 10px;
-  margin: 2px 8px 4px;
+  border: 1px solid @noti-border;
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-top: 0;
+  margin-bottom: 6px;
   color: @text-primary;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .widget-dnd > switch {
   background: @bg-dnd-off;
-  border-radius: 99px; /* rounded rectangle track */
-  border: none;
+  border: 1px solid @noti-border;
+  border-radius: 99px;
   padding: 2px;
-  min-width: 24px;
-  min-height: 15px;
+  min-width: 36px;
+  min-height: 18px;
 }
 
 .widget-dnd > switch slider {
-  background: @bg;
-  border-radius: 99px; /* perfect circle */
+  background: @text-primary;
+  border-radius: 99px;
   min-width: 18px;
   min-height: 18px;
   margin: 0;
@@ -191,164 +247,225 @@
 
 .widget-dnd > switch:checked {
   background: @accent;
+  border-color: @accent;
 }
 
-/* ── Widget: Label ────────────────────────────────── */
+.widget-dnd > switch:checked slider {
+  background: @bg;
+}
+
+/* ══════════════════════════════════════════════════════
+   Widget: label
+   ══════════════════════════════════════════════════════ */
 .widget-label > label {
   font-size: 0.95rem;
   color: @text-muted;
   margin: 6px 10px;
 }
 
-/* ── Widget: Menubar (Wi-Fi / Bluetooth) ──────────── */
+/* ══════════════════════════════════════════════════════
+   Widget: menubar (Wi-Fi / Bluetooth)
+   One bordered card; the pills sit inside it and the
+   revealed dropdown matches the same style.
+   ══════════════════════════════════════════════════════ */
 .widget-menubar {
-  margin: 1px 3px 1px 3px;
+  background: @noti-bg-alt;
+  border: 1px solid @noti-border;
+  border-radius: 12px;
+  padding: 6px;
+  margin-top: 0;
+  margin-bottom: 6px;
 }
 
-/* the pill buttons that reveal each dropdown */
+/* every button in the menubar: same shape, same border */
+.widget-menubar button {
+  background: @noti-bg-bright;
+  color: @text-primary;
+  border: 1px solid @noti-border;
+  border-radius: 10px;
+  padding: 5px 14px;
+  margin: 3px 4px;
+}
+
+.widget-menubar button label {
+  font-size: 0.85rem;
+  color: inherit;
+}
+
+.widget-menubar button:hover {
+  background: @noti-bg-action-hover;
+  color: @noti-fg-action-hover;
+  border-color: @noti-border-hi;
+}
+
+/* toggle state (on) */
+.widget-menubar button:checked,
+.widget-menubar button.toggle:checked {
+  background: @widget-button-checked;
+  color: @widget-button-checked-fg;
+  border-color: @widget-button-checked;
+}
+
+/* the Wi-Fi / Bluetooth header pills */
 .widget-menubar > box > .menu-button-bar > button {
-  margin: 3px;
-  padding: 1px 16px;
   background: @noti-bg-bright;
   color: @text-muted;
-  border: 1px solid transparent;
-  border-radius: 20px;
-}
-
-.widget-menubar > box > .menu-button-bar > button > label {
-  font-size: 0.8rem;
+  border-radius: 99px;
+  padding: 5px 18px;
 }
 
 .widget-menubar > box > .menu-button-bar > button:hover {
   background: @accent;
-  color: @text-primary;
+  color: @bg;
+  border-color: @accent;
 }
 
-/* items inside the revealed dropdown */
-.widget-menubar .menu-button-bar button {
-  border-radius: 20px;
-  margin: 2px 4px;
-  color: @text-primary;
-  background: @noti-bg-bright;
+/* the dropdown that slides open under the pills */
+.widget-menubar revealer > box {
+  background: @bg;
+  border: 1px solid @noti-border;
+  border-radius: 10px;
+  padding: 4px;
+  margin: 4px 4px 2px 4px;
 }
 
-.widget-menubar .menu-button-bar button:hover {
+.widget-menubar revealer button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: @text-primary;
+  margin: 2px;
+  padding: 6px 12px;
+}
+
+.widget-menubar revealer button:hover {
   background: @noti-bg-action-hover;
   color: @noti-fg-action-hover;
+  border-color: transparent;
 }
 
-.widget-menubar .menu-button-bar button.toggle:checked {
-  background: @widget-button-checked;
-  color: @widget-button-checked-fg;
-}
-
-/* ── Widget: Buttons Grid ─────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   Widget: buttons grid
+   ══════════════════════════════════════════════════════ */
 .widget-buttons-grid {
   background: @noti-bg-alt;
-  border-radius: 8px;
+  border: 1px solid @noti-border;
+  border-radius: 12px;
   padding: 6px;
-  margin: 1px 3px 1px 3px;
+  margin-top: 0;
+  margin-bottom: 6px;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button {
-  margin: 3px;
-  padding: 1px 16px;
   background: @noti-bg-bright;
   color: @text-muted;
-  border: 1px solid transparent;
-  border-radius: 20px;
+  border: 1px solid @noti-border;
+  border-radius: 10px;
+  padding: 6px 14px;
+  margin: 3px;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button > label {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button:hover {
   background: @accent;
-  color: @text-primary;
+  color: @bg;
+  border-color: @accent;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button:checked {
   background: @widget-button-checked;
   color: @widget-button-checked-fg;
+  border-color: @widget-button-checked;
 }
 
-/* ── Widget: Volume ───────────────────────────────── */
-.widget-volume {
+/* ══════════════════════════════════════════════════════
+   Widget: volume & backlight
+   ══════════════════════════════════════════════════════ */
+.widget-volume,
+.widget-backlight {
   background: @noti-bg-alt;
-  border-radius: 10px;
+  border: 1px solid @noti-border;
+  border-radius: 12px;
+  color: @text-primary;
+  padding: 8px 14px;
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.widget-volume label,
+.widget-backlight label {
+  min-width: 24px;
+  margin-right: 10px;
   color: @text-primary;
 }
 
-.widget-volume {
-  margin: 10px 12px 1px 20px;
-  padding: 2px;
-}
-
-.widget-backlight {
-  margin: 2px 12px 1px 18px;
-  padding: 2px;
-}
-
-/* drag handle */
 .widget-volume scale slider,
 .widget-backlight scale slider {
+  background: @accent;
   border-radius: 99px;
   color: @accent;
 }
 
-/* border radius of bar */
 .widget-volume scale trough,
 .widget-backlight scale trough {
+  background: @bg-dnd-off;
   border-radius: 99px;
+  min-height: 8px;
 }
 
-/* bar filled portion */
 .widget-volume scale trough highlight,
 .widget-backlight scale trough highlight {
   background: @accent;
+  border-radius: 99px;
 }
 
-/* ── Widget: MPRIS ────────────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   Widget: MPRIS
+   ══════════════════════════════════════════════════════ */
 .widget-mpris {
   background: @bg-mpris;
+  border: 1px solid @noti-border;
   border-radius: 12px;
-  margin: 2px 14px 2px 14px;
+  padding: 4px;
+  margin-top: 0;
+  margin-bottom: 6px;
   color: @text-primary;
   box-shadow: none;
 }
 
+.widget-mpris-player {
+  border-radius: 10px;
+  box-shadow: none;
+  margin: 3px;
+  font-size: 0.88rem;
+}
+
 .widget-mpris-title {
-  font-size: 0.87rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: @text-primary;
 }
 
 .widget-mpris-subtitle {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: @text-muted;
 }
 
 .widget-mpris > box > button {
-  border-radius: 8px;
-  box-shadow: none;
-  margin: 6px;
-  color: @text-muted;
   background: @noti-bg;
+  color: @text-muted;
   border: 1px solid @noti-border;
+  border-radius: 8px;
+  margin: 6px;
 }
 
 .widget-mpris > box > button:hover {
   background: @accent;
-  color: @cyan-accent;
+  color: @bg;
   border-color: @noti-border-hi;
-}
-
-.widget-mpris-player {
-  border-radius: 9.5px;
-  box-shadow: none;
-  margin: 3px;
-  font-size: 0.88rem;
 }
 
 .widget-mpris-album-art {
@@ -360,21 +477,4 @@
 
 picture.mpris-background {
   opacity: 0.5;
-}
-
-/* ── Action Button ────────────────────────────────── */
-.notification-action > button {
-  color: @text-primary;
-  background: transparent;
-}
-
-.notification-action > button:hover {
-  background: @blue-gray;
-}
-
-.notification.low {
-  background: @noti-bg-low;
-}
-.notification.critical {
-  background: @noti-bg-critical;
 }

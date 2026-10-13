@@ -46,8 +46,8 @@
           {
             "label": "Toggle Wi-Fi",
             "type": "toggle",
-            "command": "sh -c '[[ $SWAYNC_TOGGLE_STATE == true ]] && nmcli radio wifi on || nmcli radio wifi off'",
-            "update-command": "sh -c '[[ $(nmcli radio wifi) == \"enabled\" ]] && echo true || echo false'"
+            "command": "sh -c '[[ $SWAYNC_TOGGLE_STATE == true ]] && (rfkill unblock wifi; iwctl device wlan0 set-property Powered on) || iwctl device wlan0 set-property Powered off'",
+            "update-command": "sh -c 'ip link show wlan0 | grep -Eq \"[<,]UP[,>]\" && echo true || echo false'"
           },
           {
             "label": "Connect to Network…",
@@ -55,7 +55,7 @@
           },
           {
             "label": "Network Settings",
-            "command": "nm-connection-editor"
+            "command": "kitty -e iwctl"
           }
         ]
       },

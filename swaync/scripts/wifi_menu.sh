@@ -1,70 +1,119 @@
 #!/usr/bin/env bash
-# Wi-Fi picker for swaync's menubar "Connect to Network…" action.
-# Requires: rofi, NetworkManager (nmcli)
-set -euo pipefail
+# Wi-Fi menu for iwd (iwctl), styled like the other rofi menus
+theme="$HOME/.config/rofi/launchers/type-1/style-5.rasi"
 
-command -v rofi >/dev/null 2>&1 || {
-    notify-send "Wi-Fi" "rofi is not installed"
+dev=$(ls /sys/class/net | grep -m1 '^w')
+if [ -z "$dev" ]; then
+    notify-send -u critical -i network-error "Wi-Fi" "No wireless device found"
     exit 1
-}
-command -v nmcli >/dev/null 2>&1 || {
-    notify-send "Wi-Fi" "nmcli/NetworkManager not found"
-    exit 1
-}
-
-nmcli radio wifi on >/dev/null 2>&1 || true
-nmcli device wifi rescan >/dev/null 2>&1 || true
-sleep 1.5
-
-# SSID:SECURITY:SIGNAL:IN-USE, de-duplicated by SSID, skip hidden/empty SSIDs
-mapfile -t rows < <(nmcli -t -f IN-USE,SSID,SECURITY,SIGNAL device wifi list |
-    awk -F: '$2 != "" && !seen[$2]++')
-
-if [[ ${#rows[@]} -eq 0 ]]; then
-    notify-send "Wi-Fi" "No networks found"
-    exit 0
 fi
 
-menu=""
-declare -A sec_of
-for row in "${rows[@]}"; do
-    IFS=: read -r inuse ssid security signal <<<"$row"
-    sec_of["$ssid"]="$security"
-    mark=" "
-    [[ "$inuse" == "*" ]] && mark=""
+strip() { sed 's/\x1b\[[0-9;]*[A-Za-z]//g'; }
+
+# icons written as codepoints so they survive copy/paste
+ic_off=$'\U000f05aa'
+ic_refresh=$'\U000f0450'
+ic_lock=$'\U000f033e'
+ic_s4=$'\U000f0928'
+ic_s3=$'\U000f0925'
+ic_s2=$'\U000f0922'
+ic_s1=$'\U000f091f'
+
+rofi_menu() {
+    rofi -dmenu -i -format i -p "$1" -theme "$theme" \
+        -theme-str 'window { width: 600px; }'
+}
+
+# radio off: offer to turn it on
+if [ $(($(cat /sys/class/net/$dev/flags) & 1)) -eq 0 ]; then
+    choice=$(printf '%s\n' "$ic_off  Turn Wi-Fi on" | rofi_menu "Wi-Fi")
+    [ -z "$choice" ] && exit 0
+    rfkill unblock wifi
+    iwctl device "$dev" set-property Powered on
+    notify-send -i network-wireless "Wi-Fi" "Turning on..."
+    sleep 3
+    exec "$0"
+fi
+
+iwctl station "$dev" scan >/dev/null 2>&1
+sleep 2
+
+connected=$(iwctl station "$dev" show | strip | sed -n 's/^ *Connected network *//p' | sed 's/ *$//')
+
+lines=("$ic_refresh  Rescan" "$ic_off  Turn Wi-Fi off")
+actions=("rescan" "off")
+ssids=("" "")
+secs=("" "")
+
+while IFS='|' read -r cur ssid sec stars; do
+    case ${#stars} in
+    4 | 5) icon=$ic_s4 ;;
+    3) icon=$ic_s3 ;;
+    2) icon=$ic_s2 ;;
+    *) icon=$ic_s1 ;;
+    esac
     lock=""
-    [[ -n "$security" && "$security" != "--" ]] && lock=" 󰌾"
-    menu+="${mark}${ssid}${lock}  (${signal}%)"$'\n'
-done
-
-chosen="$(printf '%s' "$menu" | rofi -dmenu -i -p "󰤨 Wi-Fi" -theme ~/.config/rofi/launchers/type-4/style-1.rasi || true)"
-[[ -z "$chosen" ]] && exit 0
-
-# Strip the trailing lock glyph + signal strength, and leading connected mark
-ssid="$(sed -E 's/^ //; s/ 󰌾?  \([0-9]+%\)$//' <<<"$chosen")"
-
-if nmcli -t -f NAME connection show | grep -qxF "$ssid"; then
-    if nmcli connection up "$ssid" >/dev/null 2>&1; then
-        notify-send "Wi-Fi" "Connected to $ssid"
+    [ "$sec" != "open" ] && lock="  $ic_lock"
+    if [ "$ssid" = "$connected" ]; then
+        lines+=("$icon  $ssid$lock   (connected)")
+        actions+=("down")
     else
-        notify-send -u critical "Wi-Fi" "Failed to connect to $ssid"
+        lines+=("$icon  $ssid$lock")
+        actions+=("up")
     fi
-    exit 0
-fi
+    ssids+=("$ssid")
+    secs+=("$sec")
+done < <(iwctl station "$dev" get-networks | strip |
+    sed -E 's/^[[:space:]]*(>)?[[:space:]]*(.*[^[:space:]])[[:space:]]+(open|psk|8021x|wep)[[:space:]]+(\*+)[[:space:]]*$/\1|\2|\3|\4/' |
+    grep -E '^[^|]*\|.+\|(open|psk|8021x|wep)\|\*+$')
 
-security="${sec_of[$ssid]:-}"
-if [[ -n "$security" && "$security" != "--" ]]; then
-    pass="$(rofi -dmenu -password -p "Password for $ssid" -theme ~/.config/rofi/launchers/type-4/style-1.rasi || true)"
-    [[ -z "$pass" ]] && exit 0
-    if nmcli device wifi connect "$ssid" password "$pass" >/dev/null 2>&1; then
-        notify-send "Wi-Fi" "Connected to $ssid"
-    else
-        notify-send -u critical "Wi-Fi" "Failed to connect to $ssid (check password)"
+idx=$(printf '%s\n' "${lines[@]}" | rofi_menu "Wi-Fi")
+[ -z "$idx" ] && exit 0
+ssid="${ssids[$idx]}"
+sec="${secs[$idx]}"
+
+case "${actions[$idx]}" in
+rescan)
+    exec "$0"
+    ;;
+off)
+    iwctl device "$dev" set-property Powered off
+    notify-send -i network-wireless-offline "Wi-Fi" "Turned off"
+    ;;
+down)
+    iwctl station "$dev" disconnect
+    notify-send -i network-wireless "Wi-Fi" "Disconnected from $ssid"
+    ;;
+up)
+    if [ "$sec" = "8021x" ]; then
+        notify-send -u critical -i network-error "Wi-Fi" \
+            "$ssid is an enterprise network; configure it with iwctl by hand"
+        exit 1
     fi
-else
-    if nmcli device wifi connect "$ssid" >/dev/null 2>&1; then
-        notify-send "Wi-Fi" "Connected to $ssid"
+    known=$(iwctl known-networks list | strip | awk -v s="$ssid" \
+        '{sub(/^[ \t]+/,"")} index($0,s)==1 {print "yes"; exit}')
+    if [ "$sec" = "open" ] || [ "$known" = "yes" ]; then
+        out=$(iwctl station "$dev" connect "$ssid" 2>&1)
     else
-        notify-send -u critical "Wi-Fi" "Failed to connect to $ssid"
+        pw=$(rofi -dmenu -password -mesg "Password for $ssid" -theme "$theme" \
+            -theme-str 'mainbox { children: [ "inputbar", "message" ]; }
+                textbox-prompt-colon { str: ">"; }
+                entry { placeholder: "Password"; }' </dev/null)
+        [ -z "$pw" ] && exit 0
+        out=$(iwctl --passphrase "$pw" station "$dev" connect "$ssid" 2>&1)
     fi
-fi
+    # wait up to 10 seconds for the connection to come up
+    now=""
+    for i in $(seq 10); do
+        now=$(iwctl station "$dev" show | strip | sed -n 's/^ *Connected network *//p' | sed 's/ *$//')
+        [ "$now" = "$ssid" ] && break
+        sleep 1
+    done
+    if [ "$now" = "$ssid" ]; then
+        notify-send -i network-wireless "Wi-Fi" "Connected to $ssid"
+    else
+        notify-send -u critical -i network-error "Wi-Fi" \
+            "Couldn't connect to $ssid: ${out:-wrong password?}"
+    fi
+    ;;
+esac

@@ -1,0 +1,52 @@
+@import url("file:///home/hacket41/.cache/wal/colors-waybar.css");
+
+* {
+  background-image: none;
+  box-shadow: none;
+  font-family: "JetBrainsMono Nerd Font", sans-serif;
+  font-size: 10px;
+}
+
+window {
+  background-color: transparent;
+}
+
+button {
+  color: @foreground;
+  background-color: alpha(@background, 0.92);
+  border: 1px solid alpha(@color8, 0.6);
+  border-radius: 14px;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-position: center 38%;
+  background-size: 42%;
+  transition: all 0.15s ease;
+}
+
+button:focus,
+button:hover {
+  background-color: alpha(@color4, 0.3);
+  border-color: @color4;
+  outline: none;
+}
+
+button:active {
+  background-color: @color4;
+  color: @background;
+}
+
+#lock {
+  background-image: image(url("/usr/share/wlogout/icons/lock.png"));
+}
+#logout {
+  background-image: image(url("/usr/share/wlogout/icons/logout.png"));
+}
+#suspend {
+  background-image: image(url("/usr/share/wlogout/icons/suspend.png"));
+}
+#reboot {
+  background-image: image(url("/usr/share/wlogout/icons/reboot.png"));
+}
+#shutdown {
+  background-image: image(url("/usr/share/wlogout/icons/shutdown.png"));
+}

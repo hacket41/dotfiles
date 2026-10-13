@@ -1,66 +1,82 @@
 #!/usr/bin/env bash
-# Bluetooth picker for swaync's menubar "Connect Device…" action.
-# Requires: rofi, bluez (bluetoothctl)
-set -euo pipefail
+theme="$HOME/.config/rofi/launchers/type-1/style-5.rasi"
 
-command -v rofi >/dev/null 2>&1 || {
-    notify-send "Bluetooth" "rofi is not installed"
-    exit 1
+ic_on=$'\U000f00af'
+ic_conn=$'\U000f00b1'
+ic_off=$'\U000f00b2'
+ic_refresh=$'\U000f0450'
+
+rofi_menu() {
+    rofi -dmenu -i -format i -p "$1" -theme "$theme" \
+        -theme-str 'window { width: 600px; }'
 }
-command -v bluetoothctl >/dev/null 2>&1 || {
-    notify-send "Bluetooth" "bluetoothctl not found"
-    exit 1
-}
 
-bluetoothctl power on >/dev/null 2>&1 || true
+while true; do
+    powered=$(bluetoothctl show | awk '/Powered:/ {print $2}')
+    if [ "$powered" != "yes" ]; then
+        choice=$(printf '%s\n' "$ic_off  Turn Bluetooth on" | rofi_menu "Bluetooth")
+        [ -z "$choice" ] && exit 0
+        bluetoothctl power on >/dev/null &&
+            notify-send -i bluetooth "Bluetooth" "Turned on"
+        sleep 1
+        continue
+    fi
 
-# Scan and capture [NEW] Device lines directly from scan output, since
-# `bluetoothctl devices` alone can miss devices bluetoothd hasn't cached yet.
-scan_output="$(timeout 6 bluetoothctl scan on 2>&1 || true)"
+    connected=$(bluetoothctl devices Connected | awk '{print $2}')
+    paired=$(bluetoothctl devices Paired | awk '{print $2}')
 
-# Merge already-known/paired devices with anything freshly discovered
-mapfile -t lines < <(
-    {
-        bluetoothctl devices
-        grep -oE '\[NEW\] Device ([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2} .*' <<<"$scan_output" | sed -E 's/^\[NEW\] //'
-    } | sed -E 's/^Device //' | awk '!seen[$1]++'
-)
+    lines=("$ic_refresh  Scan for devices" "$ic_off  Turn Bluetooth off")
+    actions=("scan" "off")
+    macs=("" "")
+    names=("" "")
 
-if [[ ${#lines[@]} -eq 0 ]]; then
-    notify-send "Bluetooth" "No devices found. Check that Bluetooth is powered on (bluetoothctl show) and not rfkill-blocked."
-    exit 0
-fi
+    while read -r _ mac name; do
+        [ -z "$mac" ] && continue
+        [ "${name//-/:}" = "$mac" ] && continue # skip unnamed devices
+        if grep -Fxq "$mac" <<<"$connected"; then
+            lines+=("$ic_conn  $name   [connected]")
+        elif grep -Fxq "$mac" <<<"$paired"; then
+            lines+=("$ic_on  $name   [paired]")
+        else
+            lines+=("$ic_on  $name   [new]")
+        fi
+        actions+=("dev")
+        macs+=("$mac")
+        names+=("$name")
+    done < <(bluetoothctl devices)
 
-menu=""
-declare -A name_of
-for line in "${lines[@]}"; do
-    mac="${line%% *}"
-    name="${line#* }"
-    name_of["$mac"]="$name"
-    state="Disconnected"
-    bluetoothctl info "$mac" 2>/dev/null | grep -q "Connected: yes" && state="Connected"
-    menu+="${name}  [${state}]  (${mac})"$'\n'
+    idx=$(printf '%s\n' "${lines[@]}" | rofi_menu "Bluetooth")
+    [ -z "$idx" ] && exit 0
+    mac="${macs[$idx]}"
+    name="${names[$idx]}"
+
+    case "${actions[$idx]}" in
+    scan)
+        notify-send -i bluetooth "Bluetooth" "Scanning for 8 seconds..."
+        bluetoothctl --timeout 8 scan on >/dev/null 2>&1
+        continue
+        ;;
+    off)
+        bluetoothctl power off >/dev/null
+        notify-send -i bluetooth "Bluetooth" "Turned off"
+        exit 0
+        ;;
+    dev)
+        if grep -Fxq "$mac" <<<"$connected"; then
+            bluetoothctl disconnect "$mac" >/dev/null &&
+                notify-send -i bluetooth "Bluetooth" "Disconnected from $name"
+        else
+            if ! grep -Fxq "$mac" <<<"$paired"; then
+                timeout 25 bluetoothctl pair "$mac" >/dev/null 2>&1 &&
+                    bluetoothctl trust "$mac" >/dev/null
+            fi
+            if timeout 15 bluetoothctl connect "$mac" >/dev/null 2>&1; then
+                notify-send -i bluetooth "Bluetooth" "Connected to $name"
+            else
+                notify-send -u critical -i bluetooth "Bluetooth" "Couldn't connect to $name"
+            fi
+        fi
+        exit 0
+        ;;
+    esac
 done
-
-chosen="$(printf '%s' "$menu" | rofi -dmenu -i -p "󰂯 Bluetooth" -theme ~/.config/rofi/launchers/type-4/style-1.rasi || true)"
-[[ -z "$chosen" ]] && exit 0
-
-mac="$(grep -oE '\(([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}\)' <<<"$chosen" | tr -d '()')"
-[[ -z "$mac" ]] && exit 0
-name="${name_of[$mac]:-$mac}"
-
-if grep -q '\[Connected\]' <<<"$chosen"; then
-    if bluetoothctl disconnect "$mac" >/dev/null 2>&1; then
-        notify-send "Bluetooth" "Disconnected $name"
-    else
-        notify-send -u critical "Bluetooth" "Failed to disconnect $name"
-    fi
-else
-    bluetoothctl pair "$mac" >/dev/null 2>&1 || true
-    bluetoothctl trust "$mac" >/dev/null 2>&1 || true
-    if bluetoothctl connect "$mac" >/dev/null 2>&1; then
-        notify-send "Bluetooth" "Connected to $name"
-    else
-        notify-send -u critical "Bluetooth" "Failed to connect to $name"
-    fi
-fi

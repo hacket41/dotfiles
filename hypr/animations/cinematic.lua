@@ -1,0 +1,11 @@
+-- Cinematic: slow, smooth fades and gentle movement
+hl.config({ animations = { enabled = true } })
+hl.curve("as_sine", { type = "bezier", points = { {0.37, 0}, {0.63, 1} } })
+hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
+hl.animation({ leaf = "windows", enabled = true, speed = 8, bezier = "as_sine" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 8, bezier = "as_sine", style = "popin 94%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 6, bezier = "as_sine", style = "popin 94%" })
+hl.animation({ leaf = "fade", enabled = true, speed = 8, bezier = "as_sine" })
+hl.animation({ leaf = "border", enabled = true, speed = 8, bezier = "as_sine" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 8, bezier = "as_sine", style = "fade" })
+hl.animation({ leaf = "layers", enabled = true, speed = 7, bezier = "as_sine", style = "fade" })

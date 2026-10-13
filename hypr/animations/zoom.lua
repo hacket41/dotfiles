@@ -1,0 +1,11 @@
+-- Zoom: windows grow from the middle with a strong zoom
+hl.config({ animations = { enabled = true } })
+hl.curve("as_expo", { type = "bezier", points = { {0.16, 1}, {0.3, 1} } })
+hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
+hl.animation({ leaf = "windows", enabled = true, speed = 5, bezier = "as_expo" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 5, bezier = "as_expo", style = "popin 40%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 4, bezier = "as_expo", style = "popin 40%" })
+hl.animation({ leaf = "fade", enabled = true, speed = 4, bezier = "as_expo" })
+hl.animation({ leaf = "border", enabled = true, speed = 5, bezier = "as_expo" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "as_expo", style = "slidefade 30%" })
+hl.animation({ leaf = "layers", enabled = true, speed = 4, bezier = "as_expo", style = "popin 60%" })

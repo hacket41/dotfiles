@@ -1,0 +1,11 @@
+-- Glide: long, silky slides with a soft ease-out
+hl.config({ animations = { enabled = true } })
+hl.curve("as_expo", { type = "bezier", points = { {0.16, 1}, {0.3, 1} } })
+hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
+hl.animation({ leaf = "windows", enabled = true, speed = 7, bezier = "as_expo" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 7, bezier = "as_expo", style = "slide" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 5, bezier = "as_expo", style = "slide" })
+hl.animation({ leaf = "fade", enabled = true, speed = 5, bezier = "as_expo" })
+hl.animation({ leaf = "border", enabled = true, speed = 6, bezier = "as_expo" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 7, bezier = "as_expo", style = "slide" })
+hl.animation({ leaf = "layers", enabled = true, speed = 6, bezier = "as_expo", style = "slide" })

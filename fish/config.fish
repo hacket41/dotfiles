@@ -3,3 +3,5 @@ if status is-interactive
 end
 
 set -U fish_greeting
+
+fish_add_path /home/hacket41/.spicetify
